@@ -1,0 +1,11 @@
+Package: msPac
+Type: Package
+Title: RCPP version of MS Software
+Version: 1.0
+Date: 2019-05-28
+Author: Julia Piscioniere
+Maintainer: juliapiscioniere@gmail.com
+Description: 
+License: GPL (>= 2)
+Imports: Rcpp (>= 1.0.1)
+LinkingTo: Rcpp
