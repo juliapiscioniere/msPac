@@ -1,5 +1,5 @@
 # msPac
-In order to run msPac, start an R Script with this layout:
+In order to run msPac, start an R Script with this layout and set working directory to msPac (within this repository):
 
 nsam = 15 
 nreps = 1 
