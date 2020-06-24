@@ -69,7 +69,7 @@ void getnums(int *phowmany, NumericVector nsam, NumericVector nreps, NumericVect
     pars.mp.treeflag = 1 ;
     
     // Case I
-    I_length = I_rcpp.length(); //              of the rcpp vector = how many numbers in array
+    I_length = I_rcpp.length();
     if (I_length > 1){ //if length is greater than 1, then the I vector is there
         pars.cp.npop = I_rcpp[0];
         pars.cp.config = (int *) realloc(pars.cp.config, (unsigned)( pars.cp.npop*sizeof( int)));
@@ -93,12 +93,14 @@ void getnums(int *phowmany, NumericVector nsam, NumericVector nreps, NumericVect
             (pars.cp.size)[i] = (pars.cp.size)[0]  ;
             (pars.cp.alphag)[i] = (pars.cp.alphag)[0] ;
         }
-                
+
         for( i=0; i<pars.cp.npop; i++){
             for( j=0; j<pars.cp.npop; j++) {
                 pars.cp.mig_mat[i][j] = migr_rcpp[0]/(pars.cp.npop - 1) ; //changed it so it uses migr from rcpp
             }
         }
+
+        
         for( i=0; i< pars.cp.npop; i++){
                 pars.cp.mig_mat[i][i] = migr_rcpp[0] ;
         }
@@ -107,51 +109,21 @@ void getnums(int *phowmany, NumericVector nsam, NumericVector nreps, NumericVect
     if (migration.length() > 1){ //if migration vector is there
         double migmat_array[migration.length()];
         for(m = 0; m < migration.length(); m++){
-            //Rprintf("migration[%d] = %f", m, migration[m]);
-            //Rprintf("\n");
             migmat_array[m] = migration[m];
-            //Rprintf("migmat_array[%d] = %f", m, migmat_array[m]);
-            //Rprintf("\n");
         }
         tempArg = -1;
         for( pop = 0; pop <npop; pop++){ //going through the correct number, up to 3 (0, 1, 2) for a 3 x 3 matrix
             for( pop2 = 0; pop2 <npop; pop2++){
-//                Rprintf("tempArg before = %d", tempArg);
-//                Rprintf("\n");
                 tempArg = tempArg + 1;
                 pars.cp.mig_mat[pop][pop2]= migmat_array[tempArg];
-                
-//                Rprintf("First Loop - migmat_array[%d] = %f", tempArg, migmat_array[tempArg]);
-//                Rprintf("\n");
-//                Rprintf("First Loop - temp arg = %d -- pars.cp.migmat[%d][%d] = %f", tempArg, pop, pop2, pars.cp.mig_mat[pop][pop2]);
-//                Rprintf("\n");
             }
         }
         for( pop = 0; pop < npop; pop++) {
             pars.cp.mig_mat[pop][pop] = 0.0 ;
             for( pop2 = 0; pop2 < npop; pop2++){
-//                Rprintf("\n");
-//                Rprintf("pars.cp.migmat[%d][%d] = %f", pop, pop2, pars.cp.mig_mat[pop][pop2]);
-//                Rprintf("\n");
                 if( pop2 != pop ) pars.cp.mig_mat[pop][pop] += pars.cp.mig_mat[pop][pop2] ;
                 }
             }
-//        Rprintf("\n");
-//    for(i =0; i< pars.cp.npop; i++){
-//        for(j = 0; j < pars.cp.npop; j++){
-////            Rprintf("\n");
-////            Rprintf("pars.cp.npop = %d", pars.cp.npop);
-////            Rprintf("\n");
-////            Rprintf("npop = %d", npop);
-////            Rprintf("\n");
-////            Rprintf("i = %d", i);
-////            Rprintf("\n");
-////            Rprintf("j = %d", j);
-////            Rprintf("\n");
-////            Rprintf("migmat = %f", pars.cp.mig_mat[i][j]);
-//        }
-//        Rprintf("\n");
-//        }
     }
     
     if (en.ncol() == 3){ // for no en, pass matrix that does not have 3 columns
@@ -182,7 +154,7 @@ void getnums(int *phowmany, NumericVector nsam, NumericVector nreps, NumericVect
             pt->paramv = row_en[2] ;
             }
         }
-    
+
     if (ej.ncol() == 3){
         double row_ej[3]; //vector for each row
         NumericVector numrow_ej = ej.nrow();
@@ -194,10 +166,10 @@ void getnums(int *phowmany, NumericVector nsam, NumericVector nreps, NumericVect
             pt = (struct devent *)malloc( sizeof( struct devent) ) ;
             pt->detype = 'j';
             
-            pt->time = row_ej[0]; //time is the first element in the row ??
+            pt->time = row_ej[0];
             pt->nextde = NULL ;
             if( pars.cp.deventlist == NULL ){
-                pars.cp.deventlist = pt ; // do i need to populate pt itself?
+                pars.cp.deventlist = pt ;
 		}
             else if ( pt->time < pars.cp.deventlist->time ) {
                 ptemp = pars.cp.deventlist ;
@@ -206,9 +178,9 @@ void getnums(int *phowmany, NumericVector nsam, NumericVector nreps, NumericVect
             }
             else{
                 addtoelist( pt, pars.cp.deventlist ) ;}
-            pt ->popi = row_ej[1] - 1; // do these need to go before or here?
+            pt ->popi = row_ej[1] - 1;
             pt ->popj = row_ej[2] - 1;
             }
-        }
+    }
 }
 

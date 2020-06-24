@@ -123,7 +123,7 @@ int count, ntbs, nseeds ;
 
 extern "C" {struct params pars;}
 extern "C" {unsigned maxsites;}
-extern "C" {char tree[6000] = "";}  //change this if there is a problem with outputting the tree
+extern "C" {char tree[2000000000000] = "";}  //change this if there is a problem with outputting the tree
 
 // [[Rcpp::export]]
 std::string ms_main(NumericVector nsam, NumericVector nreps, NumericVector t, NumericVector variable_list_rcpp, IntegerVector I_rcpp, NumericVector migr_rcpp, NumericVector migration, NumericMatrix en, NumericMatrix ej, NumericVector seeds)
@@ -133,7 +133,6 @@ std::string ms_main(NumericVector nsam, NumericVector nreps, NumericVector t, Nu
     char **list, **cmatrix(int gsam, int len); //**tbsparamstrs
     FILE *pf; //*fopen() ;
     double probss, tmrca, ttot;
-    
     maxsites = SITESINC;
     //deleted maxsites code here
 
@@ -142,10 +141,7 @@ std::string ms_main(NumericVector nsam, NumericVector nreps, NumericVector t, Nu
     count=0;
 
     getnums(&howmany, nsam, nreps, t, variable_list_rcpp, I_rcpp, migr_rcpp, migration, en, ej, seeds) ;   /* results are stored in global variable, pars */
-
     
-    
-    if( !pars.commandlineseedflag ) seedit( "s");
     pf = stdout ;
 
     if( pars.mp.segsitesin ==  0 ) {
@@ -164,33 +160,7 @@ std::string ms_main(NumericVector nsam, NumericVector nreps, NumericVector t, Nu
     }
 
     while( howmany-count++ ) {
-        
-        //fprintf(pf,"\n//");
         segsites = gensam( list, &probss, &tmrca, &ttot) ;
-        /*if( pars.mp.timeflag ) fprintf(pf,"time:\t%lf\t%lf\n",tmrca, ttot ) ;
-            if( (segsites > 0 ) || ( pars.mp.theta > 0.0 ) ) {
-                if( (pars.mp.segsitesin > 0 ) && ( pars.mp.theta > 0.0 ))
-                    //fprintf(pf,"prob: %g\n", probss ) ;
-                //fprintf(pf,"segsites: %d\n",segsites);
-                //if( segsites > 0 )    fprintf(pf,"positions: ");
-                for( i=0; i<segsites; i++)
-                    //fprintf(pf,"%6.*lf ", pars.output_precision,posit[i] );
-                fprintf(pf,"\n");
-                if( (segsites > 0) && pars.mp.ageflag ){
-                    //fprintf(pf,"allele ages: ");
-                    for( i=0; i<segsites; i++)
-                        //fprintf(pf,"%6.*lf ", pars.output_precision,agevec[i] );
-                    //fprintf(pf,"\n");
-                    //fprintf(pf,"allele freqs: ");
-                    for( i=0; i<segsites; i++){
-                        for(k=afreq=0; k<pars.cp.nsam; k++) afreq += ( (list[k][i] == '1') ? 1: 0 ) ;
-                        //fprintf(pf,"%d ", afreq );
-                    }
-                    //fprintf(pf,"\n");
-                }
-                if( segsites > 0 )
-                    for(i=0;i<pars.cp.nsam; i++) { fprintf(pf,"%s\n", list[i] ); }
-            } */
     }
     if( !pars.commandlineseedflag ) seedit( "end" );
 return tree;
