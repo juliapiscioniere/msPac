@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<config>
+    <source_groups>
+        <source_group_6f63f739-1f73-4b34-bf54-f7295fadc365>
+            <c_standard>c11</c_standard>
+            <cross_compilation>
+                <target>
+                    <abi>unknown</abi>
+                    <arch>x86_64</arch>
+                    <sys>unknown</sys>
+                    <vendor>unknown</vendor>
+                </target>
+                <target_options_enabled>0</target_options_enabled>
+            </cross_compilation>
+            <name>C Source Group</name>
+            <source_extensions>
+                <source_extension>.c</source_extension>
+            </source_extensions>
+            <status>enabled</status>
+            <type>C Source Group</type>
+        </source_group_6f63f739-1f73-4b34-bf54-f7295fadc365>
+    </source_groups>
+    <version>7</version>
+</config>

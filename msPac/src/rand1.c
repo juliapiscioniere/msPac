@@ -51,9 +51,9 @@ commandlineseed( int *seeds)
     seedv[0] = seeds[0];
     seedv[1] = seeds[1];
     seedv[2] = seeds[2];
-	printf("\n%d %d %d\n", seedv[0], seedv[1], seedv[2] );
+	printf("\nseeds: %d %d %d\n", seedv[0], seedv[1], seedv[2] );
 	seed48(seedv);
-    printf("\n%f", ran1());
+    printf("\nran1: %f\n", ran1());
 	return(3);
 }
 
