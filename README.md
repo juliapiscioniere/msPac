@@ -1,4 +1,6 @@
 # msPac
+This package was written based off of the MS software by Richard Hudson. It was written with the mentorship of Dr. Allan Strand. 
+
 In order to run msPac, start an R Script, load msPac and setup this layout:<br />
 
 library('msPac') <br />
