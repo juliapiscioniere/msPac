@@ -8,8 +8,7 @@ I = c(0) <br />
 migration = c(0) <br />
 en_matrix = matrix(c(0), ncol = 1, byrow = TRUE) <br />
 ej_matrix = matrix(c(0), ncol = 1, byrow = TRUE) <br />
-
-variable_list = c(1, 4, 0, 0, 1, 0, 1, 0, 0, 1, 2) <br />
+es_matrix = matrix(c(0), ncol = 1, byrow = TRUE) <br />
 migr = 0 <br />
 seeds = c(5004, 25353, 42948) <br />
 devtools::load_all() <br />
@@ -25,3 +24,4 @@ I = c(4, 10, 10, 10, 10) <br />
 migration = c(0.0, 1213.0, 1213.0,  986.1, 1213.0, 0.0, 986.1, 1213.0, 1213.0,  986.1, 0.0, 1213.0, 986.1, 1213.0, 1213.0, 0.0) <br />
 en_matrix = matrix(c(0,1,1, 0, 2, 1, 0, 3, 1, 0, 4, 1), ncol = 3, byrow = TRUE) <br />
 ej_matrix = matrix(c(0.00035, 2,1, .0006, 3, 2, .00085, 4, 3), ncol = 3, byrow = TRUE) <br />
+es_matrix = matrix(c(.05, 1, 2), ncol = 3, byrow = TRUE) <br />
