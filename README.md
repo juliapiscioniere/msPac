@@ -1,5 +1,5 @@
 # msPac
-In order to run msPac, start an R Script with this layout and set working directory to msPac (within this repository):<br />
+In order to run msPac, start an R Script, load msPac and setup this layout:<br />
 
 library('msPac') <br />
 
