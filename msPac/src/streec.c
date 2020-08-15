@@ -1,5 +1,7 @@
 /**********  segtre_mig.c **********************************
-*
+*       This file was written entirely by Hudson. Check original
+*       msdoc.pdf with any questions regarding the original
+*       software.
 *	This subroutine uses a Monte Carlo algorithm described in
 *	Hudson,R. 1983. Theor.Pop.Biol. 23: 183-201, to produce
 *	a history of a random sample of gametes under a neutral
@@ -190,7 +192,7 @@ segtre_mig(struct c_params *cp, int *pnsegs )
 			fprintf(stderr," Infinite coalescent time. No migration.\n");
 			error("streec.c line 185");
 		   }
-		}
+	} 
 		eflag = 0 ;
 
 		if( prect > 0.0 ) {      /* cross-over or gene conversion */

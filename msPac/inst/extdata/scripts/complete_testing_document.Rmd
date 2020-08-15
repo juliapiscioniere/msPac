@@ -1,0 +1,240 @@
+---
+title: "Complete_Testing_Document"
+author: "Julia Piscioniere"
+date: "8/8/2020"
+output:
+  word_document: default
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+Call to ms_main, the main function in the msPac R package:
+  trees = ms_main(nsamp, nrep, t, variable_list, I, migr, migmat, en_matrix, ej_matrix)
+  
+msPac produces genetic trees based off of the information given on a species' population and its history. The software produces a vector with nrep number of trees; seqgen can then be ran on this multi-tree vector in order . 
+There are 9 variables to pass to ms_main:
+
+1. nsamp: number of copies of the locus in each sample
+
+2. nrep: the number of trees you want generated (number of times the ms will run)
+
+3. t: theta (mutation parameter)
+
+4. I: vector that splits the population into subpopulations. The first number is how many subpopulations there are and the following are how many chromosomes are in the respective popualation. (See Example 2)
+
+5. migr: migration parameter 4N0m - optional, default is 0 which means no migration between the populations (originally was last number in I vector)
+
+6. migmat: migration matrix -  each non-diagonal element is 4N0mij where mij = the fraction of subpopulation i that is made up of migrants from subpopulation j
+
+7. en_matrix: an R matrix with 3 columns that passes all instances of the previous -en call. All -e.. calls in ms signify a previous event, moving backwards from the present. The en_matrix specifially means that each row is its own event, passing 't i x', which says change subpopulation i's size to x*N0 and the growth rate to 0 at time t. 
+
+8. ej_matrix: the same type of variable and format that passes previous events. Each row is 't i j' and this tells ms to move the lineages in the i subpopulation to the j subpopulation at time t. Subpopulation i's migration rates are set to 0 (the growth rates do not change). From this point to the present direction, this is seen as population splitting. 
+
+9. es_matrix: Another event case; the es matrix consists of rows that follow the pattern "t i p" where t is time, i is a subpopulation, and p is probability. The es case means to split subpopulation i into subpopulation i and a new sub- population, labeled npop + 1. Each ancestral lineage in subpopulation i is randomly assigned to subpopulation i with probability p and subpopula- tion npop + 1 with probability 1 − p. The size of subpopulation npop + 1 is set to N0. Migration rates to and from the new subpopulation are as- sumed to be zero and the growth rate of the new subpopulation is set to zero. Subpopulation i retains the same growth rate and migration rates as before the event. In the forward direction this corresponds to popu- lation admixture. The size, growth rates and migration parameters for the new subpopulation can be immediately modified by following the -es command with appropriate additional -e commands. Remember, that if changed population size and growth rates are desired at the same time point, that one must put the size change command first followed by the growth rate change command. This is because the size change command changes the growth rate to zero. (Copied from explanation from original msdoc.pdf in source code file for ms written by R. Hudson.)
+
+The following examples show how to call multiple different test cases. All variables should be defaulted to zero and changed for each call - this looks different for each variable type, but they are all included in the test cases below. 
+
+First Example:
+This only includes nsamp, nrep, and t - the most basic of the testing cases. This means that one iteration of ms will run with each sample consisting of 4 different chromosomes with theta being 5.0. 
+  
+```{r setup, include=FALSE}
+library(msPac)
+library(phyclust)
+```
+
+```{r}
+nsamp = 4
+nrep = 1
+t = 5.0
+I = c(0)
+migmat = c(0)
+en_matrix = matrix(c(0),ncol = 1)
+ej_matrix = matrix(c(0), ncol = 1)
+es_matrix = matrix(c(0), ncol = 1)
+migr = 0
+variable_list = c(1, 4, 0, 0, 1, 1, 0, 0, 1, 2)
+trees = ms_main(nsamp, nrep, t, I, migr, migmat, en_matrix, ej_matrix, es_matrix)
+print(trees)
+
+output = seqgen(opts = "-mHKY -l40 -q", newick.tree = trees)
+print(output)
+
+tree_output = file("output.txt")
+write(trees[1], tree_output)
+first_tree = read.tree('output.txt')
+plot(first_tree)
+close(tree_output)
+file.remove("output.txt")
+
+```
+Second Example:
+This example adds in the I vector. It splits the population of 15 into 3 subpopulations: the first subpopoulation is the first 10 chromosomes, the second is the next four, and the last population is the last chromosome. The migration rate of 5.0 that means that they all receive migrants at this rate. 
+```{r}
+nsamp = 15
+nrep = 1
+t = 2.0
+I = c(3, 10, 4, 1)
+migmat = c(0)
+en_matrix = matrix(c(0),ncol = 1)
+ej_matrix = matrix(c(0), ncol = 1)
+es_matrix = matrix(c(0), ncol = 1)
+migr = 5.0
+trees = ms_main(nsamp, nrep, t, I, migr, migmat, en_matrix, ej_matrix, es_matrix)
+print(trees)
+
+output = seqgen(opts = "-mHKY -l40 -q", newick.tree = trees)
+print(output)
+```
+
+Third Example:
+This adds in the migration matrix. The I vector populates the migration magtrix preliminarily, and this is used if no migration matrix is given. Migmat is a vector that is passed just as on the original ms command-line. 
+```{r}
+nsamp = 15
+nrep = 1
+t = 2.0
+I = c(3, 10, 4, 1)
+migmat = c(0, 1.0, 2.0, 3.0, 0, 4.0, 5.0, 6.0, 0)
+en_matrix = matrix(c(0),ncol = 1)
+ej_matrix = matrix(c(0), ncol = 1)
+migr = 0
+trees = ms_main(nsamp, nrep, t, I, migr, migmat, en_matrix, ej_matrix, es_matrix)
+print(trees)
+
+output = seqgen(opts = "-mHKY -l40 -q", newick.tree = trees)
+print(output)
+```
+Fourth Example:
+This example adds in the en matrix. In this case, at time point .1, subpopulation 2's size is one quarter of what it previously was. 
+```{r}
+nsamp = 10
+nrep = 1
+t = 2.0
+I = c(2, 5, 5)
+migmat = c(0)
+en_matrix = matrix(c(0.1, 2, .25), ncol = 3)
+ej_matrix = matrix(c(0), ncol = 1)
+es_matrix = matrix(c(0), ncol = 1)
+migr = 6.0
+trees = ms_main(nsamp, nrep, t, I, migr, migmat, en_matrix, ej_matrix, es_matrix)
+print(trees)
+output = seqgen(opts = "-mHKY -l40 -q", newick.tree = trees)
+print(output)
+```
+Fifth Example:
+Adding in the ej matrix: in this case, all lineages from subpopulation 2 are moved to subpopulation 1 at time 0.09375. 
+```{r}
+nsamp = 15
+nrep = 1
+t = 11.2
+I = c(2, 3, 12)
+migmat = c(0)
+en_matrix = matrix(c(0), ncol = 1)
+ej_matrix = matrix(c(.09375, 2, 1), ncol = 3)
+es_matrix = matrix(c(0), ncol = 1)
+migr = 0
+trees = ms_main(nsamp, nrep, t, I, migr, migmat, en_matrix, ej_matrix, es_matrix)
+print(trees)
+output = seqgen(opts = "-mHKY -l40 -q", newick.tree = trees)
+print(output)
+```
+
+Sixth Example: 
+Adding it all together into a larger test case. 
+```{r}
+nsamp = 18
+nrep = 1
+t = .01
+
+I = c(9, 2, 2, 2, 2, 2, 2, 2, 2, 2)
+
+migmat = c(0.0, 1213.0, 735.8, 1213.0, 986.1, 653.8, 735.8, 653.8, 486.2, 1213.0, 0.0, 1213.0, 986.1, 1213.0,  986.1, 653.8, 735.8, 653.8, 735.8, 1213.0, 0.0, 653.8, 986.1, 1213.0, 486.2, 653.8, 735.8, 1213.0, 986.1, 653.8, 0.0, 1213.0, 735.8, 1213.0, 986.1, 653.8, 986.1, 1213.0, 986.1, 1213.0, 0.0, 1213.0,  986.1, 1213.0,  986.1,  653.8, 986.1, 1213.0, 735.8, 1213.0, 0.0, 653.8,  986.1, 1213.0,  735.8,  653.8,  486.2, 1213.0,  986.1,  653.8,  0.0, 1213.0,  735.8,  653.8, 735.8,  653.8,  986.1, 1213.0,  986.1, 1213.0, 0.0, 1213.0,  486.2,  653.8,  735.8,  653.8,  986.1, 1213.0,  735.8, 1213.0, 0.0)
+
+en_matrix = matrix(c( 0, 1, 1, 0, 2, 1, 0, 3, 1, 0, 4, 1, 0, 5, 1, 0, 6, 1, 0, 7, 1, 0, 8, 1, 0, 9, 1), ncol = 3, byrow = TRUE)
+
+ej_matrix = matrix(c(0.000475,  2,  1, 0.000725,  3,  2, 0.000975,  4,  3, 0.001225,  5,  4, 0.001475,  6,  5, 0.001725,  7,  6, 0.001975,  8,  7, 0.002225,  9,  8), ncol = 3, byrow = TRUE)
+
+es_matrix = matrix(c(.01, 1, 2), ncol = 3)
+
+migr = 0
+trees = ms_main(nsamp, nrep, t, I, migr, migmat, en_matrix, ej_matrix, es_matrix)
+print(trees)
+output = seqgen(opts = "-mHKY -l40 -q", newick.tree = trees)
+print(output)
+
+tree_output = file("output.txt")
+write(trees[1], tree_output)
+first_tree = read.tree('output.txt')
+plot(first_tree)
+close(tree_output)
+```
+Seventh Example:
+Zero migration example with multiple past events
+
+The following show the difference between a migration rate of 0 (first tree) and a migration rate of 2 (second tree).
+```{r}
+nsamp = 11
+nrep = 1
+t = 2.0
+I = c(2, 5, 6)
+migmat = c(0)
+en_matrix = matrix(c(3.0, 2, 1), ncol = 3)
+ej_matrix = matrix(c(6.0, 1, 2), ncol = 3)
+es_matrix = matrix(c(7.0, 2, 1), ncol = 3)
+migr = 0
+trees = ms_main(nsamp, nrep, t, I, migr, migmat, en_matrix, ej_matrix, es_matrix)
+print(trees)
+
+tree_output = file("output.txt")
+write(trees[1], tree_output)
+first_tree = read.tree('output.txt')
+plot(first_tree)
+close(tree_output)
+
+
+
+```
+```{r}
+
+nsamp = 11
+nrep = 1
+t = 2.0
+I = c(2, 5, 6)
+migmat = c(0)
+en_matrix = matrix(c(3.0, 2, 1), ncol = 3)
+ej_matrix = matrix(c(6.0, 1, 2), ncol = 3)
+es_matrix = matrix(c(7.0, 2, 1), ncol = 3)
+migr = 2.0
+trees = ms_main(nsamp, nrep, t, I, migr, migmat, en_matrix, ej_matrix, es_matrix)
+print(trees)
+
+tree_output = file("output.txt")
+write(trees[1], tree_output)
+first_tree = read.tree('output.txt')
+plot(first_tree)
+close(tree_output)
+
+
+```
+
+Using the imbedded loop to output more trees and running seqgen on this vector:
+```{r}
+nsamp = 18
+nrep = 5
+t = .01
+I = c(9, 2, 2, 2, 2, 2, 2, 2, 2, 2)
+
+migmat = c(0.0, 1213.0, 735.8, 1213.0, 986.1, 653.8, 735.8, 653.8, 486.2, 1213.0, 0.0, 1213.0, 986.1, 1213.0,  986.1, 653.8, 735.8, 653.8, 735.8, 1213.0, 0.0, 653.8, 986.1, 1213.0, 486.2, 653.8, 735.8, 1213.0, 986.1, 653.8, 0.0, 1213.0, 735.8, 1213.0, 986.1, 653.8, 986.1, 1213.0, 986.1, 1213.0, 0.0, 1213.0,  986.1, 1213.0,  986.1,  653.8, 986.1, 1213.0, 735.8, 1213.0, 0.0, 653.8,  986.1, 1213.0,  735.8,  653.8,  486.2, 1213.0,  986.1,  653.8,  0.0, 1213.0,  735.8,  653.8, 735.8,  653.8,  986.1, 1213.0,  986.1, 1213.0, 0.0, 1213.0,  486.2,  653.8,  735.8,  653.8,  986.1, 1213.0,  735.8, 1213.0, 0.0)
+
+en_matrix = matrix(c( 0, 1, 1, 0, 2, 1, 0, 3, 1, 0, 4, 1, 0, 5, 1, 0, 6, 1, 0, 7, 1, 0, 8, 1, 0, 9, 1), ncol = 3, byrow = TRUE)
+
+ej_matrix = matrix(c(0.000475,  2,  1, 0.000725,  3,  2, 0.000975,  4,  3, 0.001225,  5,  4, 0.001475,  6,  5, 0.001725,  7,  6, 0.001975,  8,  7, 0.002225,  9,  8), ncol = 3, byrow = TRUE)
+
+es_matrix = matrix(c(.02, 2, 3), ncol = 3)
+migr = 0
+trees = ms_main(nsamp, nrep, t, I, migr, migmat, en_matrix, ej_matrix, es_matrix)
+print(trees)
+
+output = seqgen(opts = "-mHKY -l40 -q", newick.tree = trees)
+print(output)
+```
+

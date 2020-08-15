@@ -10,50 +10,16 @@ ran1()
         return( drand48() );
 }               
 
-
-	void seedit( char *flag )
-{
-	FILE *fopen(), *pfseed;
-	unsigned short seedv[3], seedv2[3],  *seed48(), *pseed ;
-	int i;
-
-	if( flag[0] == 's' ) {
-	   pfseed = fopen("seedms","r");
-	   if( pfseed == NULL ) {
-           seedv[0] = 3579 ; seedv[1] = 27011; seedv[2] = 59243; 
-	   }
-	   else {
-	       seedv2[0] = 3579; seedv2[1] = 27011; seedv2[2] = 59243; 
-           for(i=0;i<3;i++){ 
-		       if(  fscanf(pfseed," %hd",seedv+i) < 1 )
-		            seedv[i] = seedv2[i] ;
-		   }
-	       fclose( pfseed);
-	   }
-	   seed48( seedv );   
-
-       printf("\n%d %d %d\n", seedv[0], seedv[1], seedv[2] );    
-	}
-	else {
-	     pfseed = fopen("seedms","w");
-         pseed = seed48(seedv);
-         fprintf(pfseed,"%d %d %d\n",pseed[0], pseed[1],pseed[2]);     
-	}
-}
 int
-commandlineseed( int *seeds)
+commandlineseed( int *seeds) /* takes seeds from random number generator in testmain to use in the program*/
 {
     unsigned short seedv[3], *seed48();
-
-    /*seedv[0] = atoi( seeds[0] );
-    seedv[1] = atoi( seeds[1] );
-    seedv[2] = atoi( seeds[2] ); */
     seedv[0] = seeds[0];
     seedv[1] = seeds[1];
     seedv[2] = seeds[2];
 	printf("\nseeds: %d %d %d\n", seedv[0], seedv[1], seedv[2] );
 	seed48(seedv);
-    printf("\nran1: %f\n", ran1());
-	return(3);
+    //printf("\nran1: %f\n", ran1());
+	return(3); /* returns the number of seeds */
 }
 
